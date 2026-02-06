@@ -177,7 +177,7 @@ const WishPage: React.FC<WishPageProps> = ({ config, onWishSubmit, onNext }) => 
               >
                 <div className="absolute inset-0 z-0">
                    <img 
-                     src={`${t.characterImg}?id=${t.id}`} 
+                    src={`${t.characterImg}?v=1`} 
                      alt="Card" 
                      className="w-full h-full object-cover"
                    />
