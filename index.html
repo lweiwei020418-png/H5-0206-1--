@@ -21,6 +21,7 @@
         .gold-gradient { background: linear-gradient(135deg, #FFD700, #B8860B); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        .h-screen-fix { height: 100vh; height: 100dvh; }
         * { -webkit-touch-callout: none; -webkit-user-select: none; }
         input, textarea { -webkit-user-select: text; }
     </style>
@@ -40,7 +41,7 @@
 
 <link rel="stylesheet" href="/index.css">
 </head>
-<body class="bg-red-900 m-0 p-0 overflow-hidden">
+<body class="bg-red-900 m-0 p-0 overflow-auto">
     <div id="root"></div>
 <script type="module" src="./index.tsx"></script>
 <script type="module" src="/index.tsx"></script>
