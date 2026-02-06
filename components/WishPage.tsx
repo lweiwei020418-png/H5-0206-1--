@@ -176,7 +176,11 @@ const WishPage: React.FC<WishPageProps> = ({ config, onWishSubmit, onNext }) => 
                 onTouchEnd={handleTouchEnd}
               >
                 <div className="absolute inset-0 z-0">
-                   <img src={t.characterImg} alt="Card" className="w-full h-full object-cover" />
+                   <img 
+                     src={`${t.characterImg}?t=${Date.now()}`} 
+                     alt="Card" 
+                     className="w-full h-full object-cover"
+                   />
                    <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-[#8b1111]/90 pointer-events-none"></div>
                 </div>
 
