@@ -169,7 +169,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="h-screen-fix bg-[#8b1111] relative text-white font-serif-zh overflow-hidden select-none">
+    <div className="h-screen-fix bg-[#8b1111] relative text-white font-serif-zh overflow-auto select-none">
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute top-0 left-0 w-full h-full opacity-10 bg-[url('https://www.transparenttextures.com/patterns/pinstriped-suit.png')]"></div>
         <div className="absolute top-[-10%] left-[-10%] w-[40%] aspect-square bg-yellow-500/20 blur-[120px] rounded-full animate-pulse"></div>
