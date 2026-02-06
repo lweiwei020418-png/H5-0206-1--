@@ -190,7 +190,7 @@ const App: React.FC = () => {
         </button>
       </div>
 
-      <main className="relative z-20 max-w-md mx-auto h-full flex flex-col">
+      <main className="relative z-20 max-w-md mx-auto min-h-full flex flex-col overflow-y-auto">
         {stage === AppStage.WISH && <WishPage config={GLOBAL_CONFIG.wishPage} onNext={() => setStage(AppStage.CHECK_SCORE)} onWishSubmit={handleWishSubmitted} />}
         {stage === AppStage.CHECK_SCORE && <CheckScorePage config={GLOBAL_CONFIG.checkScorePage} courseLink={GLOBAL_CONFIG.wishPage.publicCourse.link} onNext={() => setStage(AppStage.EVALUATE)} />}
         {stage === AppStage.EVALUATE && <EvaluatePage config={GLOBAL_CONFIG.evaluatePage} onNext={() => setStage(AppStage.SUCCESS_REPORT)} />}
