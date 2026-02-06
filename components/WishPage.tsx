@@ -1,0 +1,314 @@
+
+import React, { useState, useEffect, useRef } from 'react';
+import { WishData } from '../types';
+import { POSTER_TEMPLATES, GLOBAL_CONFIG } from '../constants';
+
+interface WishPageProps {
+  config: any;
+  onWishSubmit: (data: WishData) => void;
+  onNext: () => void;
+}
+
+const WishPage: React.FC<WishPageProps> = ({ config, onWishSubmit, onNext }) => {
+  const [showForm, setShowForm] = useState(false);
+  const [showPoster, setShowPoster] = useState(false);
+  const [currentIdx, setCurrentIdx] = useState(0);
+  const [showShareGuide, setShowShareGuide] = useState(false);
+  const [formData, setFormData] = useState<WishData>({ nickname: '', targetSchool: '', targetScore: '', message: '' });
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  
+  const [danmakuRows, setDanmakuRows] = useState<string[][]>([
+    ['政治85+！', '考神附体', '一战成硕', '研友顶峰相见', '有道政治必胜', '谢谢米老师', '祝我政治高分', '复试稳过', '26考研冲啊'],
+    ['稳住能赢', '研招网一通百通', '26考研上岸', '有道政治太牛了', '必胜必胜', '政治一定要过', '分数线稳降', '调剂顺利', '梦想达成'],
+    ['梦想成真', '上岸上岸', '考研人加油', '政治80+稳了', '谢谢有道名师团', '成功录取', '不负努力', '研路长虹', '万事顺遂']
+  ]);
+
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // 分享逻辑更新：固定标题文案 + 动态封面
+  useEffect(() => {
+    const wx = (window as any).wx;
+    if (wx) {
+      const currentCard = POSTER_TEMPLATES[currentIdx];
+      const templates = GLOBAL_CONFIG.share;
+      
+      const shareData = {
+        title: templates.title,
+        desc: templates.desc,
+        link: window.location.href,
+        imgUrl: currentCard.shareImg || currentCard.characterImg,
+        success: () => console.log('分享文案已同步')
+      };
+
+      wx.ready(() => {
+        wx.updateAppMessageShareData(shareData);
+        wx.updateTimelineShareData(shareData);
+      });
+    }
+  }, [currentIdx, showPoster]);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('yidao_last_wish');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        setFormData(parsed);
+        setIsSubmitted(true);
+      } catch (e) { console.error(e); }
+    }
+    
+    const savedWall = localStorage.getItem('yidao_wishes_wall_platform');
+    if (savedWall) {
+      try {
+        setDanmakuRows(JSON.parse(savedWall));
+      } catch (e) { console.error(e); }
+    }
+    
+    audioRef.current = new Audio(GLOBAL_CONFIG.bgmUrl);
+    audioRef.current.loop = true;
+
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, []);
+
+  const startBgm = () => {
+    if (audioRef.current && audioRef.current.paused) {
+      audioRef.current.play().catch(err => console.log("Audio needs interaction"));
+    }
+  };
+
+  const handleConfirmSync = async () => {
+    const newDanmaku = `${formData.nickname || '考研人'}: ${formData.message || '愿一战成硕！'}`;
+    const newRows = [...danmakuRows];
+    newRows[0] = [newDanmaku, ...newRows[0]];
+    setDanmakuRows(newRows);
+    localStorage.setItem('yidao_wishes_wall_platform', JSON.stringify(newRows));
+    
+    // ==========================================
+    // 同步到公司内部数据库
+    // ==========================================
+    try {
+      // 后续填写：替换为实际的公司内部接口地址
+      const apiUrl = '/api/internal/wish/submit'; // 公司内部接口地址
+      
+      await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          // 后续填写：如果需要认证，请添加认证头
+          // 'Authorization': 'Bearer your-token'
+        },
+        body: JSON.stringify({
+          ...formData,
+          type: 'SYNC'
+        })
+      });
+      console.log('祈福墙已同步到公司数据库');
+    } catch (error) {
+      console.error('同步到公司数据库失败:', error);
+    }
+    
+    setShowPoster(false);
+    alert(config.syncSuccessAlert || '同步成功！大家都能看到你的心愿啦~');
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    startBgm();
+    localStorage.setItem('yidao_last_wish', JSON.stringify(formData));
+    setIsSubmitted(true);
+    onWishSubmit(formData);
+    setShowPoster(true);
+    setShowForm(false);
+  };
+
+  const handleViewCard = () => {
+    startBgm();
+    if (isSubmitted) setShowPoster(true);
+    else setShowForm(true);
+  };
+
+  const touchStart = useRef(0);
+  const handleTouchStart = (e: React.TouchEvent) => { touchStart.current = e.touches[0].clientX; };
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    const diff = touchStart.current - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) {
+      if (diff > 0 && currentIdx < POSTER_TEMPLATES.length - 1) setCurrentIdx(prev => prev + 1);
+      else if (diff < 0 && currentIdx > 0) setCurrentIdx(prev => prev - 1);
+    }
+  };
+
+  const nextCard = () => currentIdx < POSTER_TEMPLATES.length - 1 && setCurrentIdx(prev => prev + 1);
+  const prevCard = () => currentIdx > 0 && setCurrentIdx(prev => prev - 1);
+
+  if (showPoster) {
+    return (
+      <div className="flex flex-col items-center h-full pt-[60px] px-4 overflow-hidden animate-in slide-in-from-bottom duration-500 bg-[#5c0b0b]">
+        <div className="text-center mb-1">
+          <h2 className="text-2xl font-calligraphy text-yellow-400 drop-shadow-md tracking-widest">请选择你的英雄</h2>
+        </div>
+
+        <div className="relative w-full h-[350px] flex items-center justify-center perspective-1000 mb-2">
+          {currentIdx > 0 && (
+            <button onClick={prevCard} className="absolute left-[-10px] z-[50] w-12 h-12 bg-white/5 backdrop-blur-md rounded-full flex items-center justify-center border border-white/10 active:scale-90 transition-all text-yellow-500/60">
+              <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+            </button>
+          )}
+
+          {POSTER_TEMPLATES.map((t, i) => {
+            const offset = i - currentIdx;
+            const isCenter = i === currentIdx;
+            const isVisible = Math.abs(offset) <= 2;
+            if (!isVisible) return null;
+
+            return (
+              <div 
+                key={t.id}
+                className={`absolute w-[210px] h-[330px] transition-all duration-500 ease-out rounded-xl shadow-[0_25px_50px_rgba(0,0,0,0.8)] border-[1px] border-yellow-500/30 overflow-hidden flex flex-col bg-red-900
+                  ${isCenter ? 'z-30 scale-100 opacity-100 translate-x-0' : 'z-10 scale-[0.82] opacity-30'}
+                  ${offset < 0 ? '-translate-x-28' : offset > 0 ? 'translate-x-28' : ''}
+                `}
+                onTouchStart={handleTouchStart}
+                onTouchEnd={handleTouchEnd}
+              >
+                <div className="absolute inset-0 z-0">
+                   <img src={t.characterImg} alt="Card" className="w-full h-full object-cover" />
+                   <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-[#8b1111]/90 pointer-events-none"></div>
+                </div>
+
+                {/* 这里的 pb-4 确保白色文本框向下移动，不遮挡名师立绘上的字 */}
+                <div className="relative z-10 h-full flex flex-col items-center justify-end p-4 pb-4 text-center pointer-events-none">
+                   <div className="w-full bg-white/95 rounded-lg p-3 mb-1 shadow-inner flex flex-col items-center border-[2px] border-yellow-500/40">
+                      <div className="w-full flex justify-between items-center text-[8px] text-red-900 font-black mb-0.5 opacity-70">
+                         <span>TO: {formData.nickname || '考研人'}</span>
+                         <span>GOAL: {formData.targetScore || '400'}+</span>
+                      </div>
+                      <div className="w-full h-px bg-red-900/10 mb-1.5"></div>
+                      <p className="text-red-900 text-[10px] font-serif-zh font-bold leading-tight text-center">“{formData.message || '愿一战成硕，前程似锦！'}”</p>
+                      <div className="mt-1 text-[6px] text-red-700/40 uppercase tracking-widest font-black italic">Youdao Kaoyan 2026</div>
+                   </div>
+                </div>
+              </div>
+            );
+          })}
+
+          {currentIdx < POSTER_TEMPLATES.length - 1 && (
+            <button onClick={nextCard} className="absolute right-[-10px] z-[50] w-12 h-12 bg-white/5 backdrop-blur-md rounded-full flex items-center justify-center border border-white/10 active:scale-90 transition-all text-yellow-500/60">
+              <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"/></svg>
+            </button>
+          )}
+        </div>
+        
+        <div className="text-yellow-500/60 text-[9px] mb-3 font-bold tracking-widest animate-pulse">💡 长按卡片区域，可保存专属上岸符到本地</div>
+
+        <div className="w-full space-y-3 px-4 flex flex-col items-center flex-shrink-0 z-50">
+           <button 
+             onClick={() => setShowShareGuide(true)}
+             className="w-full py-3.5 bg-[#e62e2d] text-white rounded-full font-bold shadow-[0_10px_20px_rgba(230,46,45,0.4)] active:scale-95 transition"
+           >🔗 分享朋友圈</button>
+           
+           <div className="flex gap-3 w-full">
+             <button 
+               onClick={handleConfirmSync}
+               className="flex-1 py-3.5 bg-white/10 border border-white/20 text-white rounded-full font-bold text-[11px] flex items-center justify-center gap-2 active:scale-95 transition"
+             >同步祈福墙</button>
+             <button 
+               onClick={onNext}
+               className="flex-[1.5] py-3.5 bg-gradient-to-r from-yellow-400 to-yellow-600 text-red-950 rounded-full font-bold text-[11px] shadow-lg active:scale-95 transition"
+             >{'继续查分之旅 >'}</button>
+           </div>
+        </div>
+
+        {showShareGuide && (
+          <div className="fixed inset-0 z-[500] bg-black/85 flex flex-col items-end p-6" onClick={() => setShowShareGuide(false)}>
+            <div className="animate-bounce mb-4 mr-4">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#FFD700" strokeWidth="2"><path d="M7 17l10-10M17 17l-10-10"/></svg>
+            </div>
+            <p className="text-yellow-500 text-xl font-bold font-calligraphy text-right">
+              点击右上角菜单<br/>选择“发送给朋友”或“分享到朋友圈”<br/>当前卡片预览图将同步为分享封面！
+            </p>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  const BTN_STYLE = "w-full py-6 bg-gradient-to-b from-[#f8bc3a] to-[#d68a0c] text-red-950 rounded-[40px] font-black text-2xl shadow-[0_10px_30px_rgba(0,0,0,0.3)] active:scale-[0.98] transition-all";
+
+  return (
+    <div className="flex flex-col h-full pt-16 overflow-y-auto scrollbar-hide pb-32">
+      <div className="flex flex-col items-center mb-4">
+        <h1 className="text-5xl font-black text-white drop-shadow-lg">{config.title}</h1>
+        <p className="text-yellow-500/80 text-[10px] font-bold uppercase tracking-[0.5em]">{config.subTitle}</p>
+      </div>
+
+      <div className="flex-1 flex flex-col items-center px-6">
+        <div className="text-center mb-6">
+           <h1 className="text-4xl font-calligraphy font-bold gold-gradient flex items-center justify-center gap-4">
+             <span>{config.mainHeading[0]}</span>
+             <span className="w-px h-8 bg-yellow-500/30"></span>
+             <span>{config.mainHeading[1]}</span>
+           </h1>
+        </div>
+
+        <div onClick={() => window.open(config.publicCourse.link, '_blank')} className="w-full mb-6 bg-gradient-to-r from-[#5c0b0b] to-[#8b1111] border border-yellow-500/30 rounded-2xl p-4 flex items-center justify-between shadow-[0_10px_25px_rgba(0,0,0,0.4)] cursor-pointer active:scale-[0.99] transition-all">
+          <div className="flex items-center gap-3 overflow-hidden">
+            <div className="w-12 h-12 bg-yellow-500/10 rounded-full flex-shrink-0 flex items-center justify-center text-2xl shadow-inner">📺</div>
+            <div className="flex flex-col truncate">
+              <span className="text-yellow-400 font-black text-sm truncate">{config.publicCourse.title}</span>
+              <span className="text-white/50 text-[9px] mt-0.5 truncate">{config.publicCourse.desc}</span>
+            </div>
+          </div>
+          <div className="bg-gradient-to-b from-yellow-300 to-yellow-500 text-red-950 px-5 py-2.5 rounded-full text-xs font-black shadow-[0_4px_15px_rgba(245,166,35,0.4)] whitespace-nowrap">
+            {config.publicCourse.buttonText}
+          </div>
+        </div>
+
+        <div className="w-full h-48 relative mb-6 overflow-hidden rounded-[32px] border border-white/10 bg-black/20 flex flex-col justify-around py-4">
+          {danmakuRows.map((row, idx) => (
+            <div key={idx} className={`flex gap-6 whitespace-nowrap ${idx % 2 === 0 ? 'animate-scroll-left' : 'animate-scroll-right'}`}>
+              {[...row, ...row, ...row].map((t, i) => (
+                <div key={`${idx}-${i}`} className="px-5 py-2 rounded-full border border-white/5 text-[11px] font-bold bg-white/10 backdrop-blur-sm">
+                  {t}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+
+        <div className="w-full space-y-5">
+          <button onClick={() => setShowForm(true)} className={BTN_STYLE}>{isSubmitted ? '修改我的心愿' : '许下上岸心愿'}</button>
+          <button onClick={handleViewCard} className={BTN_STYLE}>查看我的心愿卡</button>
+        </div>
+      </div>
+
+      {showForm && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center px-6 animate-in fade-in duration-300">
+          <div className="absolute inset-0 bg-black/90 backdrop-blur-md" onClick={() => setShowForm(false)}></div>
+          <form onSubmit={handleSubmit} className="relative bg-[#3a0808] border-2 border-yellow-500/30 p-8 rounded-[40px] w-full max-w-sm space-y-4">
+            <h3 className="text-2xl font-calligraphy text-yellow-500 text-center mb-4">诚心所愿 必有回响</h3>
+            <input required className="w-full bg-black/30 border border-white/10 p-4 rounded-2xl text-white outline-none focus:border-yellow-500" placeholder="您的昵称" value={formData.nickname} onChange={e => setFormData({...formData, nickname: e.target.value})}/>
+            <input required className="w-full bg-black/30 border border-white/10 p-4 rounded-2xl text-white outline-none focus:border-yellow-500" placeholder="目标分数 (如: 400+)" value={formData.targetScore} onChange={e => setFormData({...formData, targetScore: e.target.value})}/>
+            <input required className="w-full bg-black/30 border border-white/10 p-4 rounded-2xl text-white outline-none focus:border-yellow-500" placeholder="目标院校" value={formData.targetSchool} onChange={e => setFormData({...formData, targetSchool: e.target.value})}/>
+            <textarea required className="w-full bg-black/30 border border-white/10 p-4 rounded-2xl text-white h-24 outline-none focus:border-yellow-500" placeholder="写下你的考研宣言..." value={formData.message} onChange={e => setFormData({...formData, message: e.target.value})}></textarea>
+            <button type="submit" className="w-full py-4 bg-yellow-500 text-red-900 rounded-full font-black text-xl shadow-lg">生成上岸符</button>
+          </form>
+        </div>
+      )}
+
+      <style>{`
+        @keyframes scroll-left { 0% { transform: translateX(0); } 100% { transform: translateX(-33.33%); } }
+        @keyframes scroll-right { 0% { transform: translateX(-33.33%); } 100% { transform: translateX(0); } }
+        .animate-scroll-left { animation: scroll-left 8s linear infinite; }
+        .animate-scroll-right { animation: scroll-right 10s linear infinite; }
+        .perspective-1000 { perspective: 1000px; }
+      `}</style>
+    </div>
+  );
+};
+
+export default WishPage;
