@@ -165,7 +165,7 @@ const WishPage: React.FC<WishPageProps> = ({ config, onWishSubmit, onNext }) => 
               >
                 <div className="absolute inset-0 z-0 pointer-events-auto">
                    <img 
-                     src={`${t.characterImg}&v=${Date.now()}`} 
+                     src={t.characterImg} 
                      alt="Card" 
                      className="w-full h-full object-cover"
                    />
