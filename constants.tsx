@@ -91,8 +91,8 @@ export const GLOBAL_CONFIG = {
  * 九个卡片模板
  */
 export const POSTER_TEMPLATES = [
-  { id: 1, characterImg: 'https://oimagea2.ydstatic.com/image?id=-5794910231242191487&product=xue', shareImg: 'https://oimagea1.ydstatic.com/image?id=1830176462984344608&product=xue' },
-  { id: 2, characterImg: 'https://oimagec5.ydstatic.com/image?id=-7988455093636869656&product=xue', shareImg: 'https://oimageb8.ydstatic.com/image?id=-5649679858100330799&product=xue' },
+  { id: 1, characterImg: 'https://oimageb4.ydstatic.com/image?id=-8189201794609900955&product=xue', shareImg: 'https://oimagea1.ydstatic.com/image?id=1830176462984344608&product=xue' },
+  { id: 2, characterImg: 'https://oimageb5.ydstatic.com/image?id=8761175672428490850&product=xue', shareImg: 'https://oimageb8.ydstatic.com/image?id=-5649679858100330799&product=xue' },
   { id: 3, characterImg: 'https://oimagec4.ydstatic.com/image?id=-4934770906661125601&product=xue', shareImg: 'https://oimagec7.ydstatic.com/image?id=2536576817138599713&product=xue' },
   { id: 4, characterImg: 'https://oimageb2.ydstatic.com/image?id=5800395373388330177&product=xue', shareImg: 'https://oimageb1.ydstatic.com/image?id=1626242696731011788&product=xue' },
   { id: 5, characterImg: 'https://oimagec2.ydstatic.com/image?id=1327223271272034458&product=xue', shareImg: 'https://oimagec1.ydstatic.com/image?id=-1702717990345098008&product=xue' },
