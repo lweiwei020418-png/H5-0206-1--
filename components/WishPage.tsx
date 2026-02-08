@@ -162,8 +162,9 @@ const WishPage: React.FC<WishPageProps> = ({ config, onWishSubmit, onNext }) => 
                 `}
                 onTouchStart={handleTouchStart}
                 onTouchEnd={handleTouchEnd}
+                style={{ pointerEvents: 'auto' }}
               >
-                <div className="absolute inset-0 z-0 pointer-events-auto">
+                <div className="absolute inset-0 z-0 pointer-events-none">
                    <img 
                      src={t.characterImg} 
                      alt="Card" 
