@@ -22,8 +22,10 @@
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
         .h-screen-fix { height: 100vh; height: 100dvh; }
-        * { -webkit-touch-callout: none; -webkit-user-select: none; }
+        /* 允许长按保存图片 */
+        * { -webkit-user-select: none; }
         input, textarea { -webkit-user-select: text; }
+        img { -webkit-touch-callout: default; pointer-events: auto; }
     </style>
 <script type="importmap">
 {
@@ -41,7 +43,7 @@
 
 <link rel="stylesheet" href="/index.css">
 </head>
-<body class="bg-red-900 m-0 p-0 overflow-auto">
+<body class="bg-[#8b1111] m-0 p-0 overflow-auto">
     <div id="root"></div>
 <script type="module" src="./index.tsx"></script>
 <script type="module" src="/index.tsx"></script>
