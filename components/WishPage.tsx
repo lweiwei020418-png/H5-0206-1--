@@ -16,6 +16,7 @@ const WishPage: React.FC<WishPageProps> = ({ config, onWishSubmit, onNext }) => 
   const [showShareGuide, setShowShareGuide] = useState(false);
   const [formData, setFormData] = useState<WishData>({ nickname: '', targetSchool: '', targetScore: '', message: '' });
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [compositePoster, setCompositePoster] = useState<string>('');
   
   const [danmakuRows, setDanmakuRows] = useState<string[][]>([
     ['政治85+！', '考神附体', '一战成硕', '研友顶峰相见', '有道政治必胜', '谢谢米老师', '祝我政治高分', '复试稳过', '26考研冲啊'],
@@ -24,6 +25,102 @@ const WishPage: React.FC<WishPageProps> = ({ config, onWishSubmit, onNext }) => 
   ]);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // 监听数据变化，合成完整可保存的图片
+  useEffect(() => {
+    if (!showPoster) return;
+
+    const generate = async () => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      const template = POSTER_TEMPLATES[currentIdx];
+      const img = new Image();
+      img.crossOrigin = 'anonymous'; // 尝试跨域加载
+      img.src = template.characterImg;
+      
+      img.onload = () => {
+        // 设置高分画布尺寸
+        canvas.width = 840;
+        canvas.height = 1320;
+        const w = canvas.width;
+        const h = canvas.height;
+
+        // 1. 绘制背景图
+        ctx.drawImage(img, 0, 0, w, h);
+
+        // 2. 绘制渐变遮罩 (模拟 CSS 遮罩效果)
+        const grad = ctx.createLinearGradient(0, 0, 0, h);
+        grad.addColorStop(0, 'rgba(0,0,0,0.1)');
+        grad.addColorStop(0.6, 'transparent');
+        grad.addColorStop(1, 'rgba(139,17,17,0.85)');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, w, h);
+
+        // 3. 绘制白色信息框
+        const boxPadding = w * 0.1;
+        const boxW = w - boxPadding * 2;
+        const boxH = h * 0.22;
+        const boxX = boxPadding;
+        const boxY = h - boxH - h * 0.08;
+        const radius = 30;
+
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.96)';
+        ctx.shadowColor = 'rgba(0,0,0,0.3)';
+        ctx.shadowBlur = 40;
+        ctx.beginPath();
+        // 兼容性绘制圆角矩形
+        if (ctx.roundRect) {
+            ctx.roundRect(boxX, boxY, boxW, boxH, radius);
+        } else {
+            ctx.rect(boxX, boxY, boxW, boxH);
+        }
+        ctx.fill();
+        ctx.shadowBlur = 0; // 重置阴影
+
+        // 边框
+        ctx.strokeStyle = 'rgba(214, 138, 12, 0.4)';
+        ctx.lineWidth = 4;
+        ctx.stroke();
+
+        // 4. 绘制文字信息
+        ctx.fillStyle = '#8B1111';
+        
+        // TO 和 GOAL 标题栏
+        ctx.font = `bold ${w * 0.032}px sans-serif`;
+        ctx.textAlign = 'left';
+        ctx.fillText(`TO: ${formData.nickname || '考研人'}`, boxX + 40, boxY + 60);
+        
+        ctx.textAlign = 'right';
+        ctx.fillText(`GOAL: ${formData.targetScore || '400'}+`, boxX + boxW - 40, boxY + 60);
+
+        // 分隔线
+        ctx.beginPath();
+        ctx.moveTo(boxX + 40, boxY + 90);
+        ctx.lineTo(boxX + boxW - 40, boxY + 90);
+        ctx.strokeStyle = 'rgba(139,17,17,0.15)';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // 心愿语 (自动换行逻辑简化版)
+        ctx.textAlign = 'center';
+        ctx.font = `bold ${w * 0.045}px "Noto Serif SC", serif`;
+        const message = `“${formData.message || '愿一战成硕，前程似锦！'}”`;
+        ctx.fillText(message, w / 2, boxY + boxH * 0.58);
+
+        // 底部标识
+        ctx.font = `italic 900 ${w * 0.022}px sans-serif`;
+        ctx.fillStyle = 'rgba(185,28,28,0.3)';
+        ctx.letterSpacing = "4px";
+        ctx.fillText('YOUDAO KAOYAN 2026', w / 2, boxY + boxH - 50);
+
+        setCompositePoster(canvas.toDataURL('image/png'));
+      };
+    };
+
+    generate();
+  }, [currentIdx, formData, showPoster]);
 
   useEffect(() => {
     const wx = (window as any).wx;
@@ -75,33 +172,20 @@ const WishPage: React.FC<WishPageProps> = ({ config, onWishSubmit, onNext }) => 
     }
   };
 
-  /**
-   * 修复同步逻辑：
-   * 1. 弹出提示弹窗。
-   * 2. 更新本地弹幕池，确保首页能立即看到。
-   * 3. 严禁执行跳转。
-   */
   const handleConfirmSync = () => {
-    // 构造新弹幕
     const syncText = `${formData.nickname || '考研人'}: ${formData.message || '愿一战成硕！'}`;
     const newRows = [...danmakuRows];
     newRows[0] = [syncText, ...newRows[0]];
     setDanmakuRows(newRows);
-    
-    // 保存到本地存储供全局引用
     localStorage.setItem('yidao_wishes_wall_platform', JSON.stringify(newRows));
     
-    // 静默推送到后端
     fetch('/api/internal/wish/submit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ ...formData, type: 'SYNC' })
     }).catch(err => console.warn('Sync failed:', err));
 
-    // 弹出提示 (用户要求：只弹出一个小提示但不跳转)
     window.alert('心愿已同步到祈福墙！');
-    
-    // 明确不进行页面跳转 (不调用 onNext)
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -142,7 +226,7 @@ const WishPage: React.FC<WishPageProps> = ({ config, onWishSubmit, onNext }) => 
 
         <div className="relative w-full h-[350px] flex items-center justify-center perspective-1000 mb-2 flex-shrink-0">
           {currentIdx > 0 && (
-            <button onClick={prevCard} className="absolute left-[-10px] z-[50] w-12 h-12 bg-white/5 backdrop-blur-md rounded-full flex items-center justify-center border border-white/10 active:scale-90 transition-all text-yellow-500/60">
+            <button onClick={prevCard} className="absolute left-[-10px] z-[60] w-12 h-12 bg-white/5 backdrop-blur-md rounded-full flex items-center justify-center border border-white/10 active:scale-90 transition-all text-yellow-500/60">
               <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
             </button>
           )}
@@ -162,8 +246,8 @@ const WishPage: React.FC<WishPageProps> = ({ config, onWishSubmit, onNext }) => 
                 `}
                 onTouchStart={handleTouchStart}
                 onTouchEnd={handleTouchEnd}
-                style={{ pointerEvents: 'auto' }}
               >
+                {/* 视觉层：背景图与渐变 */}
                 <div className="absolute inset-0 z-0 pointer-events-none">
                    <img 
                      src={t.characterImg} 
@@ -173,6 +257,7 @@ const WishPage: React.FC<WishPageProps> = ({ config, onWishSubmit, onNext }) => 
                    <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-[#8b1111]/90 pointer-events-none"></div>
                 </div>
 
+                {/* 视觉层：动态内容框 */}
                 <div className="relative z-10 h-full flex flex-col items-center justify-end p-4 pb-4 text-center pointer-events-none">
                    <div className="w-full bg-white/95 rounded-lg p-3 mb-1 shadow-inner flex flex-col items-center border-[2px] border-yellow-500/40">
                       <div className="w-full flex justify-between items-center text-[8px] text-red-900 font-black mb-0.5 opacity-70">
@@ -184,12 +269,21 @@ const WishPage: React.FC<WishPageProps> = ({ config, onWishSubmit, onNext }) => 
                       <div className="mt-1 text-[6px] text-red-700/40 uppercase tracking-widest font-black italic">Youdao Kaoyan 2026</div>
                    </div>
                 </div>
+
+                {/* 核心修改：交互保存层。长按时，系统会捕捉到这张合成后的完整 PNG 图片 */}
+                {isCenter && compositePoster && (
+                    <img 
+                        src={compositePoster} 
+                        className="absolute inset-0 z-50 opacity-0 w-full h-full pointer-events-auto" 
+                        alt="长按保存完整祈福卡"
+                    />
+                )}
               </div>
             );
           })}
 
           {currentIdx < POSTER_TEMPLATES.length - 1 && (
-            <button onClick={nextCard} className="absolute right-[-10px] z-[50] w-12 h-12 bg-white/5 backdrop-blur-md rounded-full flex items-center justify-center border border-white/10 active:scale-90 transition-all text-yellow-500/60">
+            <button onClick={nextCard} className="absolute right-[-10px] z-[60] w-12 h-12 bg-white/5 backdrop-blur-md rounded-full flex items-center justify-center border border-white/10 active:scale-90 transition-all text-yellow-500/60">
               <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"/></svg>
             </button>
           )}
