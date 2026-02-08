@@ -11,7 +11,7 @@ const ReportPage: React.FC<ReportPageProps> = ({ config, onReportSubmit }) => {
   const [showQR, setShowQR] = useState(false);
 
   return (
-    <div className="flex flex-col h-full overflow-y-auto px-6 py-12 space-y-8 scrollbar-hide pb-32">
+    <div className="flex flex-col h-full overflow-y-auto px-6 py-12 space-y-8 scrollbar-hide pb-32 bg-[#8b1111]">
       <div className="text-center">
         <h1 className="text-4xl font-calligraphy font-bold gold-gradient drop-shadow-md mb-2">{config.heading}</h1>
         <p className="text-yellow-500/60 text-[10px] tracking-[0.2em] font-bold uppercase">{GLOBAL_CONFIG.reportPage.subHeading}</p>
@@ -34,25 +34,31 @@ const ReportPage: React.FC<ReportPageProps> = ({ config, onReportSubmit }) => {
             </div>
         </div>
 
+        {/* 插入词典笔促销文案 */}
+        <div className="text-center px-2 py-1">
+          <p className="text-yellow-400 font-bold text-[13px] leading-relaxed drop-shadow-sm">
+            扫码进群！首日即抽599元有道词典笔，<br/>查词学习秒搞定✨
+          </p>
+        </div>
+
         {/* 微信社群交互文字 */}
         <div className="text-center py-2">
             <button 
                 onClick={() => setShowQR(true)}
-                className="text-yellow-400 font-bold text-sm underline underline-offset-4 animate-pulse active:scale-95 transition-all"
+                className="text-white bg-yellow-600/20 border border-yellow-500/40 px-6 py-3 rounded-full font-bold text-sm underline underline-offset-4 animate-pulse active:scale-95 transition-all"
             >
                 {GLOBAL_CONFIG.reportPage.joinText || '点击加入微信社群参与抽奖'}
             </button>
         </div>
 
-        {/* 公开课宣传板块 */}
+        {/* 公开课宣传板块 - 移除遮罩展示清晰图片 */}
         <div 
           onClick={() => window.open(GLOBAL_CONFIG.reportPage.promoLink, '_blank')}
-          className="bg-gradient-to-b from-[#5c0b0b] to-[#8b1111] border-2 border-yellow-500/30 rounded-3xl overflow-hidden relative cursor-pointer active:scale-[0.98] transition-all shadow-2xl group"
+          className="bg-gradient-to-b from-[#8b1111] to-[#8b1111] border-2 border-yellow-500/30 rounded-3xl overflow-hidden relative cursor-pointer active:scale-[0.98] transition-all shadow-2xl group"
         >
-             <div className="w-full aspect-video relative bg-black/40">
-                <img src={GLOBAL_CONFIG.reportPage.promoBanner} alt="Banner" className="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-700" />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#5c0b0b] to-transparent"></div>
-                
+             <div className="w-full aspect-video relative">
+                <img src={GLOBAL_CONFIG.reportPage.promoBanner} alt="Banner" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                {/* 移除背景渐变遮罩 bg-gradient-to-t */}
              </div>
              
              <div className="p-8 pt-4">

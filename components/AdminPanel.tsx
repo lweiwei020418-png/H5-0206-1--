@@ -148,3 +148,4 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ config, onUpdateConfig, onClose
 };
 
 export default AdminPanel;
+

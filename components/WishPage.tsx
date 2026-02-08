@@ -25,13 +25,11 @@ const WishPage: React.FC<WishPageProps> = ({ config, onWishSubmit, onNext }) => 
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // 分享逻辑更新：固定标题文案 + 动态封面
   useEffect(() => {
     const wx = (window as any).wx;
     if (wx) {
       const currentCard = POSTER_TEMPLATES[currentIdx];
       const templates = GLOBAL_CONFIG.share;
-      
       const shareData = {
         title: templates.title,
         desc: templates.desc,
@@ -39,7 +37,6 @@ const WishPage: React.FC<WishPageProps> = ({ config, onWishSubmit, onNext }) => 
         imgUrl: currentCard.shareImg || currentCard.characterImg,
         success: () => console.log('分享文案已同步')
       };
-
       wx.ready(() => {
         wx.updateAppMessageShareData(shareData);
         wx.updateTimelineShareData(shareData);
@@ -56,17 +53,14 @@ const WishPage: React.FC<WishPageProps> = ({ config, onWishSubmit, onNext }) => 
         setIsSubmitted(true);
       } catch (e) { console.error(e); }
     }
-    
     const savedWall = localStorage.getItem('yidao_wishes_wall_platform');
     if (savedWall) {
       try {
         setDanmakuRows(JSON.parse(savedWall));
       } catch (e) { console.error(e); }
     }
-    
     audioRef.current = new Audio(GLOBAL_CONFIG.bgmUrl);
     audioRef.current.loop = true;
-
     return () => {
       if (audioRef.current) {
         audioRef.current.pause();
@@ -81,39 +75,33 @@ const WishPage: React.FC<WishPageProps> = ({ config, onWishSubmit, onNext }) => 
     }
   };
 
-  const handleConfirmSync = async () => {
-    const newDanmaku = `${formData.nickname || '考研人'}: ${formData.message || '愿一战成硕！'}`;
+  /**
+   * 修复同步逻辑：
+   * 1. 弹出提示弹窗。
+   * 2. 更新本地弹幕池，确保首页能立即看到。
+   * 3. 严禁执行跳转。
+   */
+  const handleConfirmSync = () => {
+    // 构造新弹幕
+    const syncText = `${formData.nickname || '考研人'}: ${formData.message || '愿一战成硕！'}`;
     const newRows = [...danmakuRows];
-    newRows[0] = [newDanmaku, ...newRows[0]];
+    newRows[0] = [syncText, ...newRows[0]];
     setDanmakuRows(newRows);
+    
+    // 保存到本地存储供全局引用
     localStorage.setItem('yidao_wishes_wall_platform', JSON.stringify(newRows));
     
-    // ==========================================
-    // 同步到公司内部数据库
-    // ==========================================
-    try {
-      // 后续填写：替换为实际的公司内部接口地址
-      const apiUrl = '/api/internal/wish/submit'; // 公司内部接口地址
-      
-      await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          // 后续填写：如果需要认证，请添加认证头
-          // 'Authorization': 'Bearer your-token'
-        },
-        body: JSON.stringify({
-          ...formData,
-          type: 'SYNC'
-        })
-      });
-      console.log('祈福墙已同步到公司数据库');
-    } catch (error) {
-      console.error('同步到公司数据库失败:', error);
-    }
+    // 静默推送到后端
+    fetch('/api/internal/wish/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...formData, type: 'SYNC' })
+    }).catch(err => console.warn('Sync failed:', err));
+
+    // 弹出提示 (用户要求：只弹出一个小提示但不跳转)
+    window.alert('心愿已同步到祈福墙！');
     
-    setShowPoster(false);
-    alert(config.syncSuccessAlert || '同步成功！大家都能看到你的心愿啦~');
+    // 明确不进行页面跳转 (不调用 onNext)
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -147,12 +135,12 @@ const WishPage: React.FC<WishPageProps> = ({ config, onWishSubmit, onNext }) => 
 
   if (showPoster) {
     return (
-      <div className="flex flex-col items-center h-full pt-[60px] px-4 overflow-hidden animate-in slide-in-from-bottom duration-500 bg-[#5c0b0b]">
-        <div className="text-center mb-1">
+      <div className="flex flex-col items-center h-full pt-[60px] px-4 overflow-y-auto scrollbar-hide pb-40 animate-in slide-in-from-bottom duration-500 bg-[#8b1111]">
+        <div className="text-center mb-1 flex-shrink-0">
           <h2 className="text-2xl font-calligraphy text-yellow-400 drop-shadow-md tracking-widest">请选择你的英雄</h2>
         </div>
 
-        <div className="relative w-full h-[350px] flex items-center justify-center perspective-1000 mb-2">
+        <div className="relative w-full h-[350px] flex items-center justify-center perspective-1000 mb-2 flex-shrink-0">
           {currentIdx > 0 && (
             <button onClick={prevCard} className="absolute left-[-10px] z-[50] w-12 h-12 bg-white/5 backdrop-blur-md rounded-full flex items-center justify-center border border-white/10 active:scale-90 transition-all text-yellow-500/60">
               <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
@@ -175,7 +163,7 @@ const WishPage: React.FC<WishPageProps> = ({ config, onWishSubmit, onNext }) => 
                 onTouchStart={handleTouchStart}
                 onTouchEnd={handleTouchEnd}
               >
-                <div className="absolute inset-0 z-0">
+                <div className="absolute inset-0 z-0 pointer-events-auto">
                    <img 
                      src={t.characterImg} 
                      alt="Card" 
@@ -184,7 +172,6 @@ const WishPage: React.FC<WishPageProps> = ({ config, onWishSubmit, onNext }) => 
                    <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-[#8b1111]/90 pointer-events-none"></div>
                 </div>
 
-                {/* 这里的 pb-4 确保白色文本框向下移动，不遮挡名师立绘上的字 */}
                 <div className="relative z-10 h-full flex flex-col items-center justify-end p-4 pb-4 text-center pointer-events-none">
                    <div className="w-full bg-white/95 rounded-lg p-3 mb-1 shadow-inner flex flex-col items-center border-[2px] border-yellow-500/40">
                       <div className="w-full flex justify-between items-center text-[8px] text-red-900 font-black mb-0.5 opacity-70">
@@ -207,7 +194,7 @@ const WishPage: React.FC<WishPageProps> = ({ config, onWishSubmit, onNext }) => 
           )}
         </div>
         
-        <div className="text-yellow-500/60 text-[9px] mb-3 font-bold tracking-widest animate-pulse">💡 长按卡片区域，可保存专属上岸符到本地</div>
+        <div className="text-yellow-500/60 text-[9px] mb-3 font-bold tracking-widest animate-pulse flex-shrink-0">💡 长按卡片区域，可保存专属上岸符到本地</div>
 
         <div className="w-full space-y-3 px-4 flex flex-col items-center flex-shrink-0 z-50">
            <button 
@@ -259,7 +246,7 @@ const WishPage: React.FC<WishPageProps> = ({ config, onWishSubmit, onNext }) => 
            </h1>
         </div>
 
-        <div onClick={() => window.open(config.publicCourse.link, '_blank')} className="w-full mb-6 bg-gradient-to-r from-[#5c0b0b] to-[#8b1111] border border-yellow-500/30 rounded-2xl p-4 flex items-center justify-between shadow-[0_10px_25px_rgba(0,0,0,0.4)] cursor-pointer active:scale-[0.99] transition-all">
+        <div onClick={() => window.open(config.publicCourse.link, '_blank')} className="w-full mb-6 bg-gradient-to-r from-[#8b1111] to-[#8b1111] border border-yellow-500/30 rounded-2xl p-4 flex items-center justify-between shadow-[0_10px_25px_rgba(0,0,0,0.4)] cursor-pointer active:scale-[0.99] transition-all">
           <div className="flex items-center gap-3 overflow-hidden">
             <div className="w-12 h-12 bg-yellow-500/10 rounded-full flex-shrink-0 flex items-center justify-center text-2xl shadow-inner">📺</div>
             <div className="flex flex-col truncate">
