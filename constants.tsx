@@ -99,7 +99,7 @@ export const POSTER_TEMPLATES = [
   { id: 6, characterImg: 'https://oimagea7.ydstatic.com/image?id=-1470893266635503503&product=xue', shareImg: 'https://oimageb3.ydstatic.com/image?id=4794298962753087719&product=xue' },
   { id: 7, characterImg: 'https://oimagec5.ydstatic.com/image?id=9188532620889856535&product=xue', shareImg: 'https://oimagea2.ydstatic.com/image?id=-3086835460793883956&product=xue' },
   { id: 8, characterImg: 'https://oimagec8.ydstatic.com/image?id=7975423198727246452&product=xue', shareImg: 'https://oimageb8.ydstatic.com/image?id=3676732249847341566&product=xue' },
-  { id: 9, characterImg: 'https://oimageb7.ydstatic.com/image?id=-6617221178400837167&product=xue', shareImg: 'https://oimageb2.ydstatic.com/image?id=-6096734105822325959&product=xue' },
+  { id: 9, characterImg: 'https://oimagec8.ydstatic.com/image?id=53617245901324911&product=xue', shareImg: 'https://oimageb2.ydstatic.com/image?id=-6096734105822325959&product=xue' },
 ];
 
 export const INITIAL_STATS = {
