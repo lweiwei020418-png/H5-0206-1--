@@ -29,7 +29,7 @@ export const GLOBAL_CONFIG = {
     subTitle: 'MAY ALL YOUR WISHES TRUE',
     mainHeading: ['写下心愿', '高分上岸'],
     publicCourse: {
-      title: '出分公开课',
+      title: '26考研双线解析',
       desc: '有道名师团·出分避坑指南',
       buttonText: '立即预约',
       link: 'https://ke.study.163.com/course/detail/100162721?courseId=1474859164&outVendor=kaoyan_VXchufen' 
