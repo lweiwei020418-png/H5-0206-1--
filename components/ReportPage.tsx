@@ -37,7 +37,7 @@ const ReportPage: React.FC<ReportPageProps> = ({ config, onReportSubmit }) => {
         {/* 插入词典笔促销文案 */}
         <div className="text-center px-2 py-1">
           <p className="text-yellow-400 font-bold text-[13px] leading-relaxed drop-shadow-sm">
-            扫码进群！首日即抽599元有道词典笔，<br/>查词学习秒搞定✨
+            扫码进群！有道词典笔、SKG手表、行李箱等惊喜大奖等你来拿！
           </p>
         </div>
 
@@ -47,7 +47,7 @@ const ReportPage: React.FC<ReportPageProps> = ({ config, onReportSubmit }) => {
                 onClick={() => setShowQR(true)}
                 className="text-white bg-yellow-600/20 border border-yellow-500/40 px-6 py-3 rounded-full font-bold text-sm underline underline-offset-4 animate-pulse active:scale-95 transition-all"
             >
-                {GLOBAL_CONFIG.reportPage.joinText || '点击加入微信社群参与抽奖'}
+                {GLOBAL_CONFIG.reportPage.joinText || '点击加入社群参与抽奖'}
             </button>
         </div>
 
