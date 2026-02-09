@@ -76,7 +76,7 @@ export const GLOBAL_CONFIG = {
     subHeading: '解锁万元礼分，解锁属于你的惊喜',
     marqueeText: '参与活动即有机会赢取【全额免单】奖学金 | 已有 12895 位同学参与抽奖',//公告
     prizeImg: 'https://oimagec4.ydstatic.com/image?id=5820194802399406515&product=xue',//奖品图
-    qrCodeImg: 'https://oimagea1.ydstatic.com/image?id=-562372354247238325&product=xue',//社群二维码
+    qrCodeImg: 'https://oimageb7.ydstatic.com/image?id=-2339194109088378150&product=xue',//社群二维码
     joinText: '点击加入社群参与抽奖',
     promoBanner: 'https://oimagea1.ydstatic.com/image?id=-4735438979756341361&product=xue',//出分公开课banner
     promoTitle: '🔥 必看：26考研双线解析及27考研趋势预测',
