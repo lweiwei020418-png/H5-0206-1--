@@ -79,7 +79,7 @@ export const GLOBAL_CONFIG = {
     qrCodeImg: 'https://oimageb7.ydstatic.com/image?id=-2339194109088378150&product=xue',//社群二维码
     joinText: '点击加入社群参与抽奖',
     promoBanner: 'https://oimagea1.ydstatic.com/image?id=-4735438979756341361&product=xue',//出分公开课banner
-    promoTitle: '🔥 必看：26考研双线解析及27考研趋势预测',
+    promoTitle: '🔥26考研双线解析及27考研趋势预测',
     promoDesc: '名师直播解析复试线，教你如何逆袭稳上岸。点击下方按钮立即预约直播，解锁专属复试资料包。',
     promoBtn: '立即跳转直播间',
     promoLink: 'https://ke.study.163.com/course/detail/100162721?courseId=1474859164&outVendor=kaoyan_VXchufen',
