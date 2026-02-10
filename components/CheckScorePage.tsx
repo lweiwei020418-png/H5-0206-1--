@@ -50,7 +50,7 @@ const CheckScorePage: React.FC<CheckScorePageProps> = ({ config, courseLink, onN
              <div className="absolute top-1.5 left-1.5 w-2.5 h-2.5 bg-red-600 rounded-full"></div>
              <div className="absolute right-1.5 bottom-1.5 w-4 h-1 bg-gray-500 rounded-full"></div>
           </div>
-          <span className="text-xs text-white/90 font-bold">开启屏幕录制</span>
+          <span className="text-xs text-white/90 font-bold">预约双线解析</span>
         </div>
         
         <div className="bg-[#3a0808]/80 border border-white/10 rounded-2xl h-36 flex flex-col items-center justify-center space-y-4 shadow-xl">
