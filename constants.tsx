@@ -74,13 +74,13 @@ export const GLOBAL_CONFIG = {
   reportPage: {
     heading: '有道报喜领奖台',
     subHeading: '解锁万元礼分，解锁属于你的惊喜',
-    marqueeText: '参与活动即有机会赢取【全额免单】奖学金 | 已有 12895 位同学参与抽奖',//公告
+    marqueeText: '参与报名公开课即有机会抽取大奖 | 已有 12895 位同学参与抽奖',//公告
     prizeImg: 'https://oimagec4.ydstatic.com/image?id=5820194802399406515&product=xue',//奖品图
     qrCodeImg: 'https://oimageb7.ydstatic.com/image?id=-2339194109088378150&product=xue',//社群二维码
     joinText: '点击加入社群参与抽奖',
     promoBanner: 'https://oimagea1.ydstatic.com/image?id=-4735438979756341361&product=xue',//出分公开课banner
     promoTitle: '🔥26考研双线解析及27考研趋势预测',
-    promoDesc: '名师直播解析复试线，教你如何逆袭稳上岸。点击下方按钮立即预约直播，解锁专属复试资料包。',
+    promoDesc: '出分及出线第一时间，名师直播解析变化趋势，教你如何稳稳上岸！点击下方按钮立即预约直播！',
     promoBtn: '立即跳转直播间',
     promoLink: 'https://ke.study.163.com/course/detail/100162721?courseId=1474859164&outVendor=kaoyan_VXchufen',
     successMsg: '登记成功！扫码进入社群，参与赢大奖！'
