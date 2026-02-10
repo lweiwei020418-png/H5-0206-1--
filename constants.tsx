@@ -59,7 +59,7 @@ export const GLOBAL_CONFIG = {
   checkScorePage: {
     heading: '官方查分通道已开启',
     description: '建议提前准备好准考证号及身份证号。查分时建议开启屏幕录制，记录下属于你的高光时刻！',
-    rewardHighlight: '✨ 记录查分瞬间，赢取万元奖学金 ✨',
+    rewardHighlight: '✨ 参与推好课活动，赢取万元奖学金 ✨',
     officialLink: 'https://yz.chsi.com.cn/apply/cjcx/' 
   },
 
