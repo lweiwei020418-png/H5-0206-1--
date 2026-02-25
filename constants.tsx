@@ -93,13 +93,13 @@ export const GLOBAL_CONFIG = {
 export const POSTER_TEMPLATES = [
   { id: 1, characterImg: 'https://oimageb4.ydstatic.com/image?id=-8189201794609900955&product=xue', shareImg: 'https://oimagea1.ydstatic.com/image?id=1830176462984344608&product=xue' },
   { id: 2, characterImg: 'https://oimageb5.ydstatic.com/image?id=8761175672428490850&product=xue', shareImg: 'https://oimageb8.ydstatic.com/image?id=-5649679858100330799&product=xue' },
-  { id: 3, characterImg: 'https://oimagec4.ydstatic.com/image?id=-4934770906661125601&product=xue', shareImg: 'https://oimagec7.ydstatic.com/image?id=2536576817138599713&product=xue' },
-  { id: 4, characterImg: 'https://oimageb2.ydstatic.com/image?id=5800395373388330177&product=xue', shareImg: 'https://oimageb1.ydstatic.com/image?id=1626242696731011788&product=xue' },
-  { id: 5, characterImg: 'https://oimagec2.ydstatic.com/image?id=1327223271272034458&product=xue', shareImg: 'https://oimagec1.ydstatic.com/image?id=-1702717990345098008&product=xue' },
-  { id: 6, characterImg: 'https://oimagea7.ydstatic.com/image?id=-1470893266635503503&product=xue', shareImg: 'https://oimageb3.ydstatic.com/image?id=4794298962753087719&product=xue' },
-  { id: 7, characterImg: 'https://oimagec5.ydstatic.com/image?id=9188532620889856535&product=xue', shareImg: 'https://oimagea2.ydstatic.com/image?id=-3086835460793883956&product=xue' },
-  { id: 8, characterImg: 'https://oimagec8.ydstatic.com/image?id=7975423198727246452&product=xue', shareImg: 'https://oimageb8.ydstatic.com/image?id=3676732249847341566&product=xue' },
-  { id: 9, characterImg: 'https://oimageb7.ydstatic.com/image?id=-6617221178400837167&product=xue', shareImg: 'https://oimageb2.ydstatic.com/image?id=-6096734105822325959&product=xue' },
+  { id: 3, characterImg: 'https://oimagec1.ydstatic.com/image?id=7598817223664496305&product=xue', shareImg: 'https://oimagec7.ydstatic.com/image?id=2536576817138599713&product=xue' },
+  { id: 4, characterImg: 'https://oimagec7.ydstatic.com/image?id=-3987969151450045843&product=xue', shareImg: 'https://oimageb1.ydstatic.com/image?id=1626242696731011788&product=xue' },
+  { id: 5, characterImg: 'https://oimagea1.ydstatic.com/image?id=-2727665172216004664&product=xue', shareImg: 'https://oimagec1.ydstatic.com/image?id=-1702717990345098008&product=xue' },
+  { id: 6, characterImg: 'https://oimagea1.ydstatic.com/image?id=-1181889019323367204&product=xue', shareImg: 'https://oimageb3.ydstatic.com/image?id=4794298962753087719&product=xue' },
+  { id: 7, characterImg: 'https://oimageb6.ydstatic.com/image?id=384077762419476540&product=xue', shareImg: 'https://oimagea2.ydstatic.com/image?id=-3086835460793883956&product=xue' },
+  { id: 8, characterImg: 'https://oimageb6.ydstatic.com/image?id=1944228500651476152&product=xue', shareImg: 'https://oimageb8.ydstatic.com/image?id=3676732249847341566&product=xue' },
+  { id: 9, characterImg: 'https://oimagea8.ydstatic.com/image?id=7603127120553154870&product=xue', shareImg: 'https://oimageb2.ydstatic.com/image?id=-6096734105822325959&product=xue' },
 ];
 
 export const INITIAL_STATS = {
